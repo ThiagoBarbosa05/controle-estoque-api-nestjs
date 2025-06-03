@@ -9,7 +9,7 @@ export interface Customer {
 	cellphone?: string
 	businessPhone?: string
 	stateRegistration: string
-	createdAt: Date
+	createdAt?: Date
 	updatedAt?: Date
 	disabledAt?: Date
 	address?: Address
