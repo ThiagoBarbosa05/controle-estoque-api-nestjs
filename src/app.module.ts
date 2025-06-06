@@ -4,6 +4,7 @@ import { envSchema } from './env/env'
 
 import { EnvModule } from './env/env.module'
 import { DatabaseModule } from './db/database.module'
+import { UserModule } from './user/user.module'
 
 @Module({
 	imports: [
