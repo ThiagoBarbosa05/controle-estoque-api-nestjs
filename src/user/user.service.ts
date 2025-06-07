@@ -7,7 +7,7 @@ import { User } from './user.interface'
 import { UserRepository } from '@/db/repositories/user-repository'
 import { hash } from 'bcrypt'
 
-interface GetUserOutput {
+export interface GetUserOutput {
 	id: string
 	name: string
 	email: string
@@ -70,4 +70,6 @@ export class UserService {
 			})),
 		}
 	}
+
+	async listUsers() {}
 }
