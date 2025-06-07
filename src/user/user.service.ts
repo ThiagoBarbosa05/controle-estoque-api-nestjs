@@ -24,6 +24,22 @@ export interface GetUserOutput {
 	}
 }
 
+export interface ListUsersOutput {
+	id: string
+	name: string
+	email: string
+	createdAt: Date
+	roles: {
+		id: string
+		name: string
+	}[]
+
+	customer: {
+		name: string
+		id: string
+	}
+}
+
 @Injectable()
 export class UserService {
 	constructor(private userRepository: UserRepository) {}
@@ -71,5 +87,24 @@ export class UserService {
 		}
 	}
 
-	async listUsers() {}
+	async listUsers(searchTerm?: string): Promise<ListUsersOutput[]> {
+		const users = await this.userRepository.findMany(searchTerm)
+
+		return users.map((user) => ({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			createdAt: user.createdAt,
+			roles: user.roles.map((role) => ({
+				id: role.role.id,
+				name: role.role.name,
+			})),
+			customer: {
+				id: user.customer.id,
+				name: user.customer.name,
+			},
+		}))
+	}
+
+	async updateUser(user: User): Promise<{ updatedUserId: string }> {}
 }

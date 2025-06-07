@@ -1,5 +1,5 @@
 import { mockUserRepository } from 'test/repositories/mock-user-repository'
-import { GetUserOutput, UserService } from './user.service'
+import { GetUserOutput, ListUsersOutput, UserService } from './user.service'
 import { Test, TestingModule } from '@nestjs/testing'
 import { UserRepository } from '@/db/repositories/user-repository'
 import { User } from './user.interface'
@@ -72,9 +72,9 @@ describe('UserService', () => {
 			customer: {
 				id: randomUUID(),
 				name: faker.company.name(),
-				consigned: [{id: randomUUID()}],
+				consigned: [{ id: randomUUID() }],
 			},
-			roles: []
+			roles: [],
 		}
 
 		repository.findById.mockResolvedValue(user)
@@ -94,6 +94,76 @@ describe('UserService', () => {
 		await expect(service.getUser(userId)).rejects.toThrow(NotFoundException)
 
 		expect(repository.findById).toHaveBeenCalledWith(userId)
+	})
 
+	// list users
+	it('should list users', async () => {
+		const users: ListUsersOutput[] = [
+			{
+				id: randomUUID(),
+				name: faker.person.fullName(),
+				email: faker.internet.email(),
+				createdAt: new Date(),
+				roles: [],
+				customer: {
+					id: randomUUID(),
+					name: faker.company.name(),
+				},
+			},
+			{
+				id: randomUUID(),
+				name: faker.person.fullName(),
+				email: faker.internet.email(),
+				createdAt: new Date(),
+				roles: [],
+				customer: {
+					id: randomUUID(),
+					name: faker.company.name(),
+				},
+			},
+		]
+
+		repository.findMany.mockResolvedValue(users)
+
+		const result = await service.listUsers()
+
+		expect(result).toBeDefined()
+		expect(result.length).toEqual(users.length)
+	})
+
+	it('should list users with search term', async () => {
+		const searchTerm = 'John Doe'
+
+		const users: ListUsersOutput[] = [
+			{
+				id: randomUUID(),
+				name: 'John Doe',
+				email: faker.internet.email(),
+				createdAt: new Date(),
+				roles: [],
+				customer: {
+					id: randomUUID(),
+					name: 'Acme Inc',
+				},
+			},
+			{
+				id: randomUUID(),
+				name: faker.person.fullName(),
+				email: faker.internet.email(),
+				createdAt: new Date(),
+				roles: [],
+				customer: {
+					id: randomUUID(),
+					name: 'Acme Inc',
+				},
+			},
+		]
+
+		repository.findMany.mockResolvedValue([users[0]])
+		const result = await service.listUsers(searchTerm)
+
+		expect(result).toBeDefined()
+		expect(result.length).toEqual(1)
+		expect(repository.findMany).toHaveBeenCalledWith(searchTerm)
 	})
 })

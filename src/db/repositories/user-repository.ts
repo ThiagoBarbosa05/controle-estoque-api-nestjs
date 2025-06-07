@@ -40,6 +40,9 @@ export class UserRepository {
 			select: {
 				name: true,
 				email: true,
+				associatedCustomerId: true,
+				createdAt: true,
+				password: true,
 				id: true,
 				roles: {
 					select: {
@@ -71,4 +74,70 @@ export class UserRepository {
 
 		return user
 	}
+
+	async findMany(searchTerm?: string) {
+		const users = await this.prisma.user.findMany({
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				createdAt: true,
+				roles: {
+					select: {
+						role: {
+							select: {
+								name: true,
+								id: true,
+							},
+						},
+					},
+				},
+				customer: {
+					select: {
+						name: true,
+						id: true,
+					},
+				},
+			},
+			where: {
+				name: {
+					contains: searchTerm as string,
+					mode: 'insensitive',
+				},
+				OR: [
+					{
+						customer: null, // Inclui usuários sem nenhum customer
+					},
+					{
+						customer: {
+							is: {
+								disabledAt: null, // Inclui usuários com customer ativo
+							},
+						},
+					},
+				],
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+		})
+
+		return users
+	}
+
+	async existingUser({ userId, email }: { userId: string; email: string }) {
+		const user = await this.prisma.user.findFirst({
+			where: {
+				AND: [{ id: { not: userId } }, { email: email }],
+			},
+		})
+
+		if (!user) {
+			return null
+		}
+
+		return user
+	}
+
+	async updateUser(user: User, userId: string) {}
 }
