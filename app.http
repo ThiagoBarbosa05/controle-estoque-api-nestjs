@@ -1,0 +1,15 @@
+POST https://controle-estoque-api-884097876403.southamerica-east1.run.app/api/authenticate
+Content-Type: application/json
+
+{
+  "email": "admin@teste.com",
+  "password": "admin123"
+}
+
+###
+GET https://controle-estoque-api-884097876403.southamerica-east1.run.app/api/metrics/wines
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZTg0YzMxNC03NDIxLTQ0ZTgtOTkwMy03YTVhZjFlMWQ2NzUiLCJyb2xlcyI6WyJhZG1pbmlzdHJhZG9yIl0sInBlcm1pc3Npb25zIjpbImFsbCJdLCJjb25zaWduZWQiOm51bGwsImN1c3RvbWVySWQiOm51bGwsImlhdCI6MTc0OTQyMDMyOH0.Za_wkmR2fElgKOfncssdLlKh-_GQ-ZrZFCisgyoTe6M
+
+###
+GET https://controle-estoque-api-884097876403.southamerica-east1.run.app/api/wines/4e0116ae-aa7c-479b-a3dd-583156f9bf24/details
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZTg0YzMxNC03NDIxLTQ0ZTgtOTkwMy03YTVhZjFlMWQ2NzUiLCJyb2xlcyI6WyJhZG1pbmlzdHJhZG9yIl0sInBlcm1pc3Npb25zIjpbImFsbCJdLCJjb25zaWduZWQiOm51bGwsImN1c3RvbWVySWQiOm51bGwsImlhdCI6MTc0OTQyMDMyOH0.Za_wkmR2fElgKOfncssdLlKh-_GQ-ZrZFCisgyoTe6M

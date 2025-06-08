@@ -5,6 +5,7 @@ import { envSchema } from './env/env'
 import { EnvModule } from './env/env.module'
 import { DatabaseModule } from './db/database.module'
 import { UserModule } from './user/user.module'
+import { WineService } from './wine/wine.service';
 
 @Module({
 	imports: [
@@ -15,6 +16,6 @@ import { UserModule } from './user/user.module'
 		EnvModule,
 		DatabaseModule,
 	],
-	providers: [],
+	providers: [WineService],
 })
 export class AppModule {}

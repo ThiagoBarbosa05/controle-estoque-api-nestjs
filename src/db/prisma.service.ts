@@ -1,4 +1,3 @@
-// biome-ignore lint/style/useImportType: <explanation>
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 import { PrismaClient } from 'prisma/generated'
 
