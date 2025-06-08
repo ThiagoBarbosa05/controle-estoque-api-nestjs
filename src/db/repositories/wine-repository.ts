@@ -167,4 +167,12 @@ export class WineRepository {
 
 		return result
 	}
+
+	async deleteWine(wineId: string) {
+		await this.prisma.wine.delete({
+			where: {
+				id: wineId,
+			},
+		})
+	}
 }

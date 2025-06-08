@@ -5,4 +5,5 @@ export const mockWineRepository = () => ({
 	findMany: vi.fn(),
 	updateWine: vi.fn(),
 	wineMetrics: vi.fn(),
+	deleteWine: vi.fn(),
 })

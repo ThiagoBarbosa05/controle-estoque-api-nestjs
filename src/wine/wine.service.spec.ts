@@ -250,4 +250,16 @@ describe('WineService', () => {
 		})
 		expect(result.items).toEqual(mockWineMetrics)
 	})
+
+	// delete wine
+	it('should delete wine', async () => {
+		const wineId = faker.string.uuid()
+
+		repository.findById.mockResolvedValue({ id: wineId })
+		repository.deleteWine.mockResolvedValue(undefined)
+
+		await service.deleteWine(wineId)
+
+		expect(repository.deleteWine).toHaveBeenCalledWith(wineId)
+	})
 })

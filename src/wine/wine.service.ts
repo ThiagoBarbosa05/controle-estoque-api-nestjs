@@ -91,4 +91,14 @@ export class WineService {
 
 		return { items: wineMetrics }
 	}
+
+	async deleteWine(wineId: string): Promise<void> {
+		const wineToDelete = await this.wineRepository.findById(wineId)
+
+		if (!wineToDelete) {
+			throw new NotFoundException('Vinho não encontrado')
+		}
+
+		await this.wineRepository.deleteWine(wineId)
+	}
 }
