@@ -6,6 +6,7 @@ import {
 import { User } from './user.interface'
 import { UserRepository } from '@/db/repositories/user-repository'
 import { hash } from 'bcrypt'
+import { Optional } from '@/@types/optional'
 
 export interface GetUserOutput {
 	id: string
@@ -106,5 +107,45 @@ export class UserService {
 		}))
 	}
 
-	async updateUser(user: User): Promise<{ updatedUserId: string }> {}
+	async updateUser(
+		user: Optional<User, 'password'>,
+		userId: string,
+	): Promise<{ updatedUserId: string }> {
+		const existingUser = await this.userRepository.existingUser({
+			userId,
+			email: user.email,
+		})
+
+		if (existingUser) {
+			throw new ConflictException(
+				`Já existe um usuário com esse email: ${user.email}.`,
+			)
+		}
+
+		const userToUpdate = await this.userRepository.findById(user.id)
+
+		if (!userToUpdate) {
+			throw new NotFoundException('Usuário não encontrado.')
+		}
+
+		if (user.password) {
+			const newPasswordHashed = await hash(user.password, 6)
+
+			user.password = newPasswordHashed
+		}
+
+		const { userUpdated } = await this.userRepository.updateUser(user, userId)
+
+		return { updatedUserId: userUpdated }
+	}
+
+	async deleteUser(userId: string): Promise<void> {
+		const userToDelete = await this.userRepository.findById(userId)
+
+		if (!userToDelete) {
+			throw new NotFoundException('Usuário não encontrado.')
+		}
+
+		await this.userRepository.deleteUser(userId)
+	}
 }

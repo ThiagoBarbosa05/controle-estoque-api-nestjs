@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { User } from '@/user/user.interface'
 import { User as PrismaUser } from 'prisma/generated'
+import { Optional } from '@/@types/optional'
 
 @Injectable()
 export class UserRepository {
@@ -139,5 +140,27 @@ export class UserRepository {
 		return user
 	}
 
-	async updateUser(user: User, userId: string) {}
+	async updateUser(user: Optional<User, 'password'>, userId: string) {
+		const userUpdated = await this.prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				name: user.name,
+				email: user.email,
+				password: user.password,
+				associatedCustomerId: user.associatedCustomerId ?? null,
+			},
+		})
+
+		return { userUpdated: userUpdated.id }
+	}
+
+	async deleteUser(userId: string) {
+		await this.prisma.user.delete({
+			where: {
+				id: userId,
+			},
+		})
+	}
 }

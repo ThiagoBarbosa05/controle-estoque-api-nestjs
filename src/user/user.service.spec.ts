@@ -166,4 +166,102 @@ describe('UserService', () => {
 		expect(result.length).toEqual(1)
 		expect(repository.findMany).toHaveBeenCalledWith(searchTerm)
 	})
+
+	// update user
+	it('should update user', async () => {
+		const userId = faker.string.uuid()
+
+		const user = {
+			id: faker.string.uuid(),
+			name: faker.person.fullName(),
+			email: faker.internet.email(),
+			password: faker.internet.password(),
+		}
+
+		repository.existingUser.mockResolvedValue(null)
+		repository.findById.mockResolvedValue({ ...user })
+		repository.updateUser.mockResolvedValue({ userUpdated: user.id })
+
+		const result = await service.updateUser(user, userId)
+
+		expect(result).toEqual({ updatedUserId: user.id })
+
+		expect(repository.existingUser).toHaveBeenCalledWith({
+			userId,
+			email: user.email,
+		})
+
+		expect(repository.findById).toHaveBeenCalledWith(user.id)
+
+		expect(repository.updateUser).toHaveBeenCalledWith(
+			expect.objectContaining({
+				...user,
+				password: expect.any(String),
+			}),
+			userId,
+		)
+	})
+
+	it('should throw ConflictException if user with same email exists', async () => {
+		const userId = faker.string.uuid()
+
+		const user = {
+			id: faker.string.uuid(),
+			name: faker.person.fullName(),
+			email: faker.internet.email(),
+			password: faker.internet.password(),
+		}
+
+		repository.existingUser.mockResolvedValue({ ...user })
+
+		await expect(service.updateUser(user, userId)).rejects.toThrow(
+			ConflictException,
+		)
+
+		expect(repository.existingUser).toHaveBeenCalledWith({
+			userId,
+			email: user.email,
+		})
+	})
+
+	it('should throw NotFoundException if user does not exist', async () => {
+		const userId = faker.string.uuid()
+
+		const user = {
+			id: faker.string.uuid(),
+			name: faker.person.fullName(),
+			email: faker.internet.email(),
+			password: faker.internet.password(),
+		}
+
+		repository.existingUser.mockResolvedValue(null)
+		repository.findById.mockResolvedValue(null)
+
+		await expect(service.updateUser(user, userId)).rejects.toThrow(
+			NotFoundException,
+		)
+	})
+
+	// delete user
+
+	it('should throw NotFoundException if user does not exist', async () => {
+		const userId = faker.string.uuid()
+
+		repository.findById.mockResolvedValue(null)
+
+		await expect(service.deleteUser(userId)).rejects.toThrow(NotFoundException)
+		expect(repository.findById).toHaveBeenCalledWith(userId)
+		expect(repository.deleteUser).not.toHaveBeenCalled()
+	})
+
+	it('should delete user if found', async () => {
+		const userId = faker.string.uuid()
+
+		repository.findById.mockResolvedValue({ id: userId })
+		repository.deleteUser.mockResolvedValue(undefined)
+
+		await expect(service.deleteUser(userId)).resolves.toBeUndefined()
+		expect(repository.findById).toHaveBeenCalledWith(userId)
+		expect(repository.deleteUser).toHaveBeenCalledWith(userId)
+	})
 })
